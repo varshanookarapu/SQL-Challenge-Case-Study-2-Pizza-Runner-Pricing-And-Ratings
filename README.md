@@ -71,7 +71,7 @@ extras = 'NaN' ;
 WITH pizza_runner_costs AS
 (
 SELECT  co.pizza_id,pizza_name,count(co.pizza_id) as pizzas_ordered,
-CASE WHEN  cardinality(string_to_array(extras,',')) IS NULL THEN  1 
+CASE WHEN  cardinality(string_to_array(extras,',')) IS NULL THEN  0 
 ELSE cardinality(string_to_array(extras,',')) * 1 
 END AS  extras_charge,
 CASE WHEN co.pizza_id = 1 THEN count(co.pizza_id)*12
@@ -91,6 +91,6 @@ SELECT  SUM(total_pizza_cost)+SUM(extras_charge) AS money_pizza_runner_made FROM
 ---
 | money_pizza_runner_made |
 | ----------------------- |
-| 144                     |
+| 142                     |
 
 ---
