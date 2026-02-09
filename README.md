@@ -58,6 +58,16 @@ pizza_runner_costs CTE TABLE
 ## SQL Code
 
 ```sql
+UPDATE runner_orders 
+SET cancellation = null 
+WHERe cancellation = 'null' OR  TRIM(cancellation) = '' OR 
+cancellation = 'NaN' ;
+
+UPDATE customer_orders
+SET extras = null 
+WHERe extras = 'null' OR  TRIM(extras) = '' OR 
+extras = 'NaN' ;
+
 WITH pizza_runner_costs AS
 (
 SELECT  co.pizza_id,pizza_name,count(co.pizza_id) as pizzas_ordered,
