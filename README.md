@@ -50,3 +50,37 @@ pizza_runner_costs CTE TABLE
 | 138                     |
 
 ---
+
+**Question 2:** What if there was an additional $1 charge for any pizza extras? Add cheese is $1 extra
+
+---
+
+## SQL Code
+
+```sql
+WITH pizza_runner_costs AS
+(
+SELECT  co.pizza_id,pizza_name,count(co.pizza_id) as pizzas_ordered,
+CASE WHEN  cardinality(string_to_array(extras,',')) IS NULL THEN  1 
+ELSE cardinality(string_to_array(extras,',')) * 1 
+END AS  extras_charge,
+CASE WHEN co.pizza_id = 1 THEN count(co.pizza_id)*12
+ELSE count(co.pizza_id)*10
+END AS total_pizza_cost 
+FROM customer_orders co 
+LEFT JOIN runner_orders ro ON co.order_id = ro.order_id
+LEFT JOIN pizza_names pn  ON co.pizza_id = pn.pizza_id
+WHERE cancellation IS NULL 
+GROUP BY co.pizza_id,pizza_name, extras
+ORDER BY co.pizza_id 
+)
+
+SELECT  SUM(total_pizza_cost)+SUM(extras_charge) AS money_pizza_runner_made FROM pizza_runner_costs
+```
+
+---
+| money_pizza_runner_made |
+| ----------------------- |
+| 144                     |
+
+---
