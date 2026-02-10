@@ -94,3 +94,14 @@ SELECT  SUM(total_pizza_cost)+SUM(extras_charge) AS money_pizza_runner_made FROM
 | 142                     |
 
 ---
+
+
+**Question 5:** If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
+
+---
+
+## SQL Code
+
+```sql
+
+```
