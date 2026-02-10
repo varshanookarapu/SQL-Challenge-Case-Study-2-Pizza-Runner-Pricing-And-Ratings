@@ -68,6 +68,7 @@ SET extras = null
 WHERe extras = 'null' OR  TRIM(extras) = '' OR 
 extras = 'NaN' ;
 
+-- used this function cardinality(string_to_array(extras,',')) to count the number of extras and then multiplied with the charge of extra 
 WITH pizza_runner_costs AS
 (
 SELECT  co.pizza_id,pizza_name,count(co.pizza_id) as pizzas_ordered,
