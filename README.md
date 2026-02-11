@@ -139,6 +139,11 @@ SELECT
 (SELECT SUM(pizza_charge)  FROM prc ) - (SELECT SUM(distance_km) *0.30 FROM rc ) as profit_pizza_runner_made
 
 ```
+prc -cte
+<img width="1686" height="190" alt="image" src="https://github.com/user-attachments/assets/39aa7117-7f22-4fb7-adc9-ca6f4c3101bc" />
+
+rc - cte
+<img width="1349" height="451" alt="image" src="https://github.com/user-attachments/assets/dc8b8c57-b482-4a08-946a-af4997fbe62a" />
 
 | total_pizza_cost | runner_charge | profit_pizza_runner_made |
 | ---------------- | ------------- | ------------------------ |
