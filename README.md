@@ -114,25 +114,35 @@ WITH prc AS
 SELECT co.pizza_id,pizza_name , COUNT(co.pizza_id) as pizzas_ordered ,
 CASE WHEN co.pizza_id=1 THEN COUNT(co.pizza_id) * 12
 ELSE COUNT(co.pizza_id) *10 END  AS 
-pizza_charge ,
-NULLIF(REGEXP_REPLACE(distance ,'[^0-9.]','','g'), ' ' ) :: DECIMAL  AS distance_km,(NULLIF(REGEXP_REPLACE(distance,'[^0-9.]','','g'), ' ' ) :: DECIMAL ) * 0.30 AS runner_charge
+pizza_charge
 FROM customer_orders co LEFT JOIN runner_orders ro
 on co.order_id = ro.order_id
 LEFT JOIN pizza_names pn ON
 co.pizza_id = pn.pizza_id
 WHERE cancellation IS NULL
-GROUP BY co.pizza_id,pn.pizza_name,distance_km
+GROUP BY co.pizza_id,pn.pizza_name
 ORDER BY co.pizza_id 
+) ,
+
+rc AS 
+(
+SELECT order_id, NULLIF(REGEXP_REPLACE(distance ,'[^0-9.]','','g'), ' ' ) :: DECIMAL  AS distance_km
+from runner_orders WHERE cancellation IS NULL
+ORDER BY order_id
 ) 
 
-SELECT SUM(pizza_charge) as total_pizza_cost , SUM(runner_charge) as pizza_runner_costs ,
-SUM(pizza_charge) -SUM(runner_charge) as amount_pizza_runner_made  FROM prc 
+
+
+SELECT 
+(SELECT SUM(pizza_charge)  FROM prc ) AS total_pizza_cost,
+(SELECT SUM(distance_km) *0.30 FROM rc ) as runner_charge ,
+(SELECT SUM(pizza_charge)  FROM prc ) - (SELECT SUM(distance_km) *0.30 FROM rc ) as profit_pizza_runner_made
 
 ```
 
-| total_pizza_cost | pizza_runner_costs | amount_pizza_runner_made |
-| ---------------- | ------------------ | ------------------------ |
-| 138              | 38.580             | 99.420                   |
+| total_pizza_cost | runner_charge | profit_pizza_runner_made |
+| ---------------- | ------------- | ------------------------ |
+| 138              | 43.560        | 94.440                   |
 
 ---
 
