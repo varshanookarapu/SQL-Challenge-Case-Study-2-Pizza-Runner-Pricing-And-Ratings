@@ -109,18 +109,30 @@ SET cancellation = null
 WHERe cancellation = 'null' OR  TRIM(cancellation) = '' OR 
 cancellation = 'NaN' ;
 
-
-SELECT  co.pizza_id,pizza_name,count(co.pizza_id) as pizzas_ordered,
-NULLIF(REGEXP_REPLACE(distance, '[^0-9]', '', 'g'), '')::INTEGER AS distance_km,
-
-CASE WHEN co.pizza_id = 1 THEN count(co.pizza_id)*12
-ELSE count(co.pizza_id)*10
-END AS total_pizza_cost 
-FROM customer_orders co 
-LEFT JOIN runner_orders ro ON co.order_id = ro.order_id
-LEFT JOIN pizza_names pn  ON co.pizza_id = pn.pizza_id
-WHERE cancellation IS NULL 
-GROUP BY co.pizza_id,pizza_name,distance
+WITH prc AS
+(
+SELECT co.pizza_id,pizza_name , COUNT(co.pizza_id) as pizzas_ordered ,
+CASE WHEN co.pizza_id=1 THEN COUNT(co.pizza_id) * 12
+ELSE COUNT(co.pizza_id) *10 END  AS 
+pizza_charge ,
+NULLIF(REGEXP_REPLACE(distance ,'[^0-9]','','g'), ' ' ) :: INTEGER  AS distance_km,(NULLIF(REGEXP_REPLACE(distance,'[^0-9]','','g'), ' ' ) :: INTEGER ) * 0.30 AS runner_charge
+FROM customer_orders co LEFT JOIN runner_orders ro
+on co.order_id = ro.order_id
+LEFT JOIN pizza_names pn ON
+co.pizza_id = pn.pizza_id
+WHERE cancellation IS NULL
+GROUP BY co.pizza_id,pn.pizza_name,distance_km
 ORDER BY co.pizza_id 
+) 
+
+SELECT SUM(pizza_charge) as total_pizza_cost , SUM(runner_charge) as pizza_runner_costs ,
+SUM(runner_charge)- SUM(pizza_charge) as amount_pizza_runner_made  FROM prc 
 
 ```
+
+| total_pizza_cost | pizza_runner_costs | amount_pizza_runner_made |
+| ---------------- | ------------------ | ------------------------ |
+| 138              | 237.30             | 99.30                    |
+
+---
+
